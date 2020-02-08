@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    android:background="#123456"
     android:orientation="vertical"
-    android:gravity="center_horizontal"
-    android:background="@drawable/fondo">
+     android:gravity="center_horizontal"
+    tools:context=".signup">
 
     <ImageView
         android:layout_width="wrap_content"
@@ -16,22 +16,30 @@
 
     <EditText
         android:id="@+id/edittext_username"
-        android:layout_width="167dp"
+        android:layout_width="213dp"
         android:layout_height="40dp"
         android:layout_marginTop="15dp"
         android:background="#FFFFFF"
         android:drawableLeft="@drawable/username"
-        android:hint="@string/username"
-         />
+        android:hint="@string/username" />
 
     <EditText
         android:id="@+id/edittext_password"
-        android:layout_width="167dp"
+        android:layout_width="214dp"
         android:layout_height="40dp"
         android:layout_marginTop="20dp"
         android:background="#FFFFFF"
         android:drawableLeft="@drawable/password"
         android:hint="@string/password" />
+
+    <EditText
+        android:id="@+id/edittext_confirmPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginTop="20dp"
+        android:background="#FFFFFF"
+        android:drawableLeft="@drawable/password"
+        android:hint="@string/confirm" />
     <Button
         android:id="@+id/edittext_login"
         android:layout_width="190dp"
@@ -39,6 +47,7 @@
         android:layout_marginTop="20dp"
         android:background="#FFFFFF"
         android:text="@string/login"></Button>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -47,11 +56,11 @@
 
         <TextView
             android:id="@+id/textview_signup"
-            android:layout_width="149dp"
+            android:layout_width="204dp"
             android:layout_height="wrap_content"
             android:paddingLeft="20dp"
-            android:textColor="#FFFFFF"
-            android:text="@string/not_registered">Desea registrase?
+            android:text="@string/not_registered"
+            android:textColor="#FFFFFF">Ir a la pantalla de ingreso.
         </TextView>
     </LinearLayout>
 

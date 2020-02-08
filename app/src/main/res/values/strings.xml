@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">min-Proyecto4</string>
+    <string name="username">Usuario</string>
+    <string name="password">Contraseña</string>
+    <string name="login">Ingresar</string>
+    <string name="not_registered">Ir a la pantalla de ingreso.</string>
+    <string name="confirm">Confirmar Contraseña</string>
 </resources>
