@@ -38,5 +38,8 @@ public class RemindersActivity extends AppCompatActivity {
                 Toast.makeText(RemindersActivity.this, "Clicked: " + reminders.get(position), Toast.LENGTH_SHORT).show();
             }
         });
+
+        ListAdapter remindersAdapter = new ListAdapter(this, R.layout.reminders_layout, reminders);
+        listView.setAdapter(remindersAdapter);
     }
 }
