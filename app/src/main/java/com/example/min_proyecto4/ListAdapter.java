@@ -7,9 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.Console;
 import java.util.List;
 
 public class ListAdapter extends BaseAdapter {
@@ -41,22 +39,36 @@ public class ListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater layoutPopulator = LayoutInflater.from(this.listAdapter);
-        View viewToRender = layoutPopulator.inflate(R.layout.reminders_list, null);
-        setElementsEvents(viewToRender);
-        String clickedReminder = remindersList.get(position);
-        TextView textView = viewToRender.findViewById(R.id.reminderText);
-        textView.setText(clickedReminder);
+        // ViewHolder es un patron que se usa cuando hay scroll en list, esto hace que
+        // la vista no tenga que crearse cada vez que se scrolea, solo cuando es nueva
+        ViewHolder viewHolder;
 
-        return viewToRender;
+        if (convertView == null) {
+            LayoutInflater layoutPopulator = LayoutInflater.from(this.listAdapter);
+            convertView = layoutPopulator.inflate(R.layout.reminders_list, null);
+
+            viewHolder = new ViewHolder();
+            viewHolder.textView = convertView.findViewById(R.id.reminderText);
+            convertView.setTag(viewHolder);
+            setElementsEvents(convertView);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
+        }
+
+        String clickedReminder = remindersList.get(position);
+        viewHolder.textView.setText(clickedReminder);
+
+        return convertView;
     }
 
-    public void setElementsEvents(View viewToRender) {
+    private void setElementsEvents(View viewToRender) {
         ImageButton deleteButton = viewToRender.findViewById(R.id.deleteButton);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("I was clicked");
+                // String clickedReminder = remindersList.get(position);
+                // textView.setText(clickedReminder);
+                System.out.println("Delete was clicked");
             }
         });
 
@@ -67,5 +79,9 @@ public class ListAdapter extends BaseAdapter {
                 System.out.println("Archive was clicked");
             }
         });
+    }
+
+    static class ViewHolder {
+        private TextView textView;
     }
 }
