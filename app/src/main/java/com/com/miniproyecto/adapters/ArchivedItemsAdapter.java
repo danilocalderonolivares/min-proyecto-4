@@ -1,4 +1,4 @@
-package com.example.min_proyecto4;
+package com.com.miniproyecto.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -6,17 +6,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
-import android.widget.TextView;
+
+import com.example.min_proyecto4.R;
+import com.miniproyecto.models.ViewHolder;
 
 import java.util.List;
 
-public class ListAdapter extends BaseAdapter {
+public class ArchivedItemsAdapter extends BaseAdapter {
 
     private Context listAdapter;
     private int layout;
     private List<String> remindersList;
 
-    public ListAdapter(Context listAdapter, int layout, List<String> remindersList) {
+    public ArchivedItemsAdapter(Context listAdapter, int layout, List<String> remindersList) {
         this.listAdapter = listAdapter;
         this.layout = layout;
         this.remindersList = remindersList;
@@ -39,18 +41,16 @@ public class ListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        // ViewHolder es un patron que se usa cuando hay scroll en list, esto hace que
-        // la vista no tenga que crearse cada vez que se scrolea, solo cuando es nueva
         ViewHolder viewHolder;
 
         if (convertView == null) {
             LayoutInflater layoutPopulator = LayoutInflater.from(this.listAdapter);
-            convertView = layoutPopulator.inflate(R.layout.reminders_list, null);
+            convertView = layoutPopulator.inflate(R.layout.archived_reminders, null);
 
             viewHolder = new ViewHolder();
             viewHolder.textView = convertView.findViewById(R.id.reminderText);
             convertView.setTag(viewHolder);
-            setElementsEvents(convertView);
+            setElementsEvents(convertView, position);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
@@ -61,27 +61,22 @@ public class ListAdapter extends BaseAdapter {
         return convertView;
     }
 
-    private void setElementsEvents(View viewToRender) {
-        ImageButton deleteButton = viewToRender.findViewById(R.id.deleteButton);
+    private void setElementsEvents(View viewToRender, final int position) {
+        ImageButton deleteButton = viewToRender.findViewById(R.id.deleteArchivedReminder);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // String clickedReminder = remindersList.get(position);
-                // textView.setText(clickedReminder);
-                System.out.println("Delete was clicked");
+                remindersList.remove(position);
+                notifyDataSetChanged();
             }
         });
 
-        ImageButton archiveButton = viewToRender.findViewById(R.id.archiveButton);
+        ImageButton archiveButton = viewToRender.findViewById(R.id.undoArchivedReminder);
         archiveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 System.out.println("Archive was clicked");
             }
         });
-    }
-
-    static class ViewHolder {
-        private TextView textView;
     }
 }

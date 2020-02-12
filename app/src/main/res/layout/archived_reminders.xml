@@ -7,25 +7,24 @@
     android:padding="20dp">
 
     <TextView
-        android:id="@+id/reminderText"
+        android:id="@+id/archivedreminderText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:textColor="#000000"
         android:layout_weight="1"
-        android:text=""
-        android:textColor="#000000" />
+        android:layout_gravity="center_vertical"
+        android:text="" />
 
     <ImageButton
-        android:id="@+id/archiveButton"
+        android:id="@+id/undoArchivedReminder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@null"
-        android:paddingTop="6dp"
         android:paddingRight="5dp"
-        app:srcCompat="@android:drawable/checkbox_on_background" />
+        android:background="@null"
+        app:srcCompat="@android:drawable/ic_menu_revert" />
 
     <ImageButton
-        android:id="@+id/deleteButton"
+        android:id="@+id/deleteArchivedReminder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@null"
