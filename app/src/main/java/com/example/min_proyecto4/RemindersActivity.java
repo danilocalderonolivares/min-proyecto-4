@@ -1,6 +1,7 @@
 package com.example.min_proyecto4;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -18,7 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.com.miniproyecto.adapters.ArchivedItemsAdapter;
 import com.com.miniproyecto.adapters.ListAdapter;
 
 import java.util.ArrayList;
@@ -60,7 +60,7 @@ public class RemindersActivity extends AppCompatActivity {
                 showAlertDialog();
                 return true;
             case R.id.archivedItems:
-                showArchivedItems();
+                startActivity(new Intent(RemindersActivity.this, ArchivedItemsActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -118,21 +118,5 @@ public class RemindersActivity extends AppCompatActivity {
         this.reminders.add(reminderInfo);
         // Esto hace que cada vez que se agrega un reminder la vista se actualice
         this.listAdapter.notifyDataSetChanged();
-    }
-
-    private void showArchivedItems() {
-        listView = findViewById(R.id.listView);
-        reminders = new ArrayList<>();
-
-        reminders.add("Jose");
-        reminders.add("Adrian");
-        reminders.add("Xinia");
-        reminders.add("Mario");
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, reminders);
-        listView.setAdapter(adapter);
-
-        ArchivedItemsAdapter itemsAdapter = new ArchivedItemsAdapter(this, R.layout.reminders_layout, reminders);
-        listView.setAdapter(itemsAdapter);
     }
 }
