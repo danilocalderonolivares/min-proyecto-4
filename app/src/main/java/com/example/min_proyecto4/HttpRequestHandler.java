@@ -10,11 +10,13 @@ import org.json.JSONObject;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class HttpRequestHandler extends AsyncTask<RequestInfo, Void, JSONObject> {
 
@@ -22,35 +24,49 @@ public class HttpRequestHandler extends AsyncTask<RequestInfo, Void, JSONObject>
     protected JSONObject doInBackground(RequestInfo[] requestInfo) {
         URL url;
         JSONObject responseData = null;
-        HttpURLConnection client;
+        HttpURLConnection connection = null;
 
         try {
-            JSONObject requestParams = requestInfo[0].requestParams;;
+            JSONObject requestParams = requestInfo[0].requestParams;
             url = new URL(requestInfo[0].URL);
-            client = (HttpURLConnection) url.openConnection();
+
+            if (!requestInfo[0].queryParams.isEmpty()) {
+                byte[] postData = requestInfo[0].queryParams.getBytes(StandardCharsets.UTF_8);
+                int postDataLength = postData.length;
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod(requestInfo[0].method);
+                connection.setDoOutput(true);
+                // connection.setInstanceFollowRedirects(false);
+                // connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                // connection.setRequestProperty("charset", "utf-8");
+                // connection.setRequestProperty("Content-Length", Integer.toString(postDataLength));
+                // connection.setUseCaches(false);
+                connection.getOutputStream().write(requestInfo[0].queryParams.getBytes("UTF-8"));
+            }
 
             // Este if se activa cuando se envia un JSON por parametros y no query params
             if (requestParams != null) {
-                client.setRequestMethod(requestInfo[0].method);
-                client.setRequestProperty("Content-Type", "application/json");
-                client.setDoOutput(true);
-                client.setDoInput(true);
-                client.setChunkedStreamingMode(0);
-                OutputStream out = new BufferedOutputStream(client.getOutputStream());
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod(requestInfo[0].method);
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setDoOutput(true);
+                connection.setDoInput(true);
+                connection.setChunkedStreamingMode(0);
+                OutputStream out = new BufferedOutputStream(connection.getOutputStream());
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
                 writer.write(requestParams.toString());
                 writer.flush();
             }
 
             // Este en un ejemplo de como se obtiene el responde code y que hacer en base al valor
-            int code = client.getResponseCode();
+            int code = connection.getResponseCode();
             /*if (code != 201) {
                 throw new IOException("Invalid response from server: " + code);
             }*/
 
             JSONArray jsonArray;
 
-            BufferedReader rd = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String line;
 
             // En este while se extraen los valores del objeto retornado
@@ -69,6 +85,7 @@ public class HttpRequestHandler extends AsyncTask<RequestInfo, Void, JSONObject>
             String hobby = responseData.getString("hobby");*/
 
         } catch (Exception e) {
+            System.out.println(e);
             // Agregamos el codigo de como manejaremos la excepcion
             // Puede ser por URL invalido
             // Excepcion desde el servidor
