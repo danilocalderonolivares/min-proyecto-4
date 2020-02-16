@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         RequestInfo[] data = new RequestInfo[1];
-        RequestInfo requestInfo = new RequestInfo("PUT", null, "https://1jj1hfrez4.execute-api.us-east-1.amazonaws.com/Clients", "idClient=5&fullName=John Doe&address=Aguantafilo&hobby=Birritas");
+        RequestInfo requestInfo = new RequestInfo("PUT", null, "https://1jj1hfrez4.execute-api.us-east-1.amazonaws.com/Clients/", "idClient=5&fullName=JohnDoe&address=Aguantafilo&hobby=Birritas");
 
         data[0] = requestInfo;
         new HttpRequestHandler().execute(data);
