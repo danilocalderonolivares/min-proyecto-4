@@ -1,5 +1,7 @@
 package com.example.min_proyecto4;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,8 +14,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -22,13 +27,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.com.miniproyecto.adapters.ListAdapter;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
-public class RemindersActivity extends AppCompatActivity {
+public class RemindersActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ListView listView;
     private List<String> reminders;
     private ListAdapter listAdapter;
+    private Button btnDatePicker, btnTimePicker;
+    private EditText txtDate, txtTime;
+    private int mYear, mMonth, mDay, mHour, mMinute;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +52,43 @@ public class RemindersActivity extends AppCompatActivity {
 
         listAdapter = new ListAdapter(this, R.layout.reminders_layout, reminders);
         listView.setAdapter(listAdapter);
+    }
+
+    @Override
+    public void onClick(View view) {
+
+        if (view == btnDatePicker) {
+            final Calendar c = Calendar.getInstance();
+            mYear = c.get(Calendar.YEAR);
+            mMonth = c.get(Calendar.MONTH);
+            mDay = c.get(Calendar.DAY_OF_MONTH);
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                    new DatePickerDialog.OnDateSetListener() {
+
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                            txtDate.setText(dayOfMonth + "-" + (month + 1) + "-" + year);
+                        }
+
+                    }, mYear, mMonth, mDay);
+            datePickerDialog.show();
+        }
+        if (view == btnTimePicker) {
+            final Calendar c = Calendar.getInstance();
+            mHour = c.get(Calendar.HOUR_OF_DAY);
+            mMinute = c.get(Calendar.MINUTE);
+
+            TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+                    new TimePickerDialog.OnTimeSetListener() {
+
+                        @Override
+                        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                            txtTime.setText(hourOfDay + ":" + minute);
+                        }
+                    }, mHour, mMinute, false);
+            timePickerDialog.show();
+        }
     }
 
     @Override
@@ -112,6 +158,14 @@ public class RemindersActivity extends AppCompatActivity {
                 }
             }
         });
+
+        btnDatePicker = alertDialog.findViewById(R.id.datePicker);
+        btnTimePicker = alertDialog.findViewById(R.id.timePicker);
+        txtDate = alertDialog.findViewById(R.id.in_date);
+        txtTime = alertDialog.findViewById(R.id.in_time);
+
+        btnDatePicker.setOnClickListener(this);
+        btnTimePicker.setOnClickListener(this);
     }
 
     private void saveReminder(String reminderInfo) {
