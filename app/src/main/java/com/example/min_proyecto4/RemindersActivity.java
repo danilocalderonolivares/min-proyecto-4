@@ -29,16 +29,16 @@ import com.miniproyecto.models.Reminder;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 public class RemindersActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ListView listView;
-    private List<Reminder> reminders;
+    private ArrayList<Reminder> reminders, archivedReminders;
     private ListAdapter listAdapter;
     private Button datePicker, timePicker;
-    private EditText textDate, textTime;
     private int year, month, day, hour, minute;
+    private EditText reminderInput, reminderDate, reminderTime, textDate, textTime;
+    ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +51,8 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         ArrayAdapter<Reminder> adapter = new ArrayAdapter<Reminder>(this, android.R.layout.simple_list_item_1, reminders);
         listView.setAdapter(adapter);
 
-        listAdapter = new ListAdapter(this, R.layout.reminders_layout, reminders);
+        archivedReminders = new ArrayList<>();
+        listAdapter = new ListAdapter(this, R.layout.reminders_layout, reminders, archivedReminders);
         listView.setAdapter(listAdapter);
     }
 
@@ -70,7 +71,12 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                 showAlertDialog();
                 return true;
             case R.id.archivedItems:
-                startActivity(new Intent(RemindersActivity.this, ArchivedItemsActivity.class));
+                Intent intent = new Intent(RemindersActivity.this, ArchivedItemsActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList("archivedItems", archivedReminders);
+                bundle.putParcelableArrayList("activeItems", reminders);
+                intent.putExtras(bundle);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -84,7 +90,9 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         View viewInflated = LayoutInflater.from(this).inflate(R.layout.new_text_reminder, null);
         builder.setView(viewInflated);
 
-        final EditText reminderInput = viewInflated.findViewById(R.id.reminderText);
+        reminderInput = viewInflated.findViewById(R.id.reminderText);
+        reminderDate = viewInflated.findViewById(R.id.date);
+        reminderTime = viewInflated.findViewById(R.id.time);
 
         builder.setPositiveButton("Agregar", new DialogInterface.OnClickListener() {
             @Override
@@ -93,7 +101,7 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                 String reminderText = reminderInput.getText().toString().trim();
 
                 if (reminderText.length() > 0) {
-                    saveReminder(reminderText);
+                    saveReminder(new Reminder(reminderDate.getText().toString(), reminderTime.getText().toString(), reminderText));
                 }
             }
         });
@@ -115,18 +123,18 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (TextUtils.isEmpty(s)) {
-                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-                } else {
+                if (!TextUtils.isEmpty(s)) {
                     alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                } else {
+                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
                 }
             }
         });
 
         datePicker = alertDialog.findViewById(R.id.datePicker);
         timePicker = alertDialog.findViewById(R.id.timePicker);
-        textDate = alertDialog.findViewById(R.id.in_date);
-        textTime = alertDialog.findViewById(R.id.in_time);
+        textDate = alertDialog.findViewById(R.id.date);
+        textTime = alertDialog.findViewById(R.id.time);
 
         datePicker.setOnClickListener(this);
         timePicker.setOnClickListener(this);
@@ -168,14 +176,8 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
-    /*private void saveReminder(String reminderInfo) {
+    private void saveReminder(Reminder reminderInfo) {
         this.reminders.add(reminderInfo);
-        // Esto hace que cada vez que se agrega un reminder la vista se actualice
-        this.listAdapter.notifyDataSetChanged();
-    }*/
-
-    private void saveReminder(String reminderInfo) {
-        this.reminders.add(new Reminder(year, month, day, hour, minute, reminderInfo));
         // Esto hace que cada vez que se agrega un reminder la vista se actualice
         this.listAdapter.notifyDataSetChanged();
     }
