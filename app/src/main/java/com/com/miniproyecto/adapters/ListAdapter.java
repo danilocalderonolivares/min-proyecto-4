@@ -81,7 +81,9 @@ public class ListAdapter extends BaseAdapter {
             convertView = layoutPopulator.inflate(R.layout.reminders_list, null);
 
             viewHolder = new ViewHolder();
-            viewHolder.textView = convertView.findViewById(R.id.reminderText);
+            viewHolder.reminderText = convertView.findViewById(R.id.reminderText);
+            viewHolder.reminderDate = convertView.findViewById(R.id.date);
+            viewHolder.reminderHour = convertView.findViewById(R.id.time);
             convertView.setTag(viewHolder);
             setElementsEvents(convertView, position);
         } else {
@@ -89,7 +91,9 @@ public class ListAdapter extends BaseAdapter {
         }
 
         Reminder clickedReminder = remindersList.get(position);
-        viewHolder.textView.setText(clickedReminder.description);
+        viewHolder.reminderText.setText(clickedReminder.description);
+        viewHolder.reminderHour.setText(clickedReminder.hour + ":" + clickedReminder.minute);
+        viewHolder.reminderDate.setText(clickedReminder.month + "-" + clickedReminder.day + "-" + clickedReminder.year);
 
         return convertView;
     }

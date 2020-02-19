@@ -48,7 +48,7 @@ public class ArchivedItemsAdapter extends BaseAdapter {
             convertView = layoutPopulator.inflate(R.layout.archived_reminders, null);
 
             viewHolder = new ViewHolder();
-            viewHolder.textView = convertView.findViewById(R.id.archivedreminderText);
+            viewHolder.reminderText = convertView.findViewById(R.id.archivedreminderText);
             convertView.setTag(viewHolder);
             setElementsEvents(convertView, position);
         } else {
@@ -56,7 +56,7 @@ public class ArchivedItemsAdapter extends BaseAdapter {
         }
 
         String clickedReminder = remindersList.get(position);
-        viewHolder.textView.setText(clickedReminder);
+        viewHolder.reminderText.setText(clickedReminder);
 
         return convertView;
     }
