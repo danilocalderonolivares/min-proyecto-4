@@ -25,6 +25,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.com.miniproyecto.adapters.ListAdapter;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.miniproyecto.models.Reminder;
 
 import java.util.ArrayList;
@@ -32,8 +33,9 @@ import java.util.Calendar;
 
 public class RemindersActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private FirebaseAnalytics mFirebaseAnalytics;
     private ListView listView;
-    private ArrayList<Reminder> reminders, archivedReminders;
+    private ArrayList<Reminder> activeReminders, archivedReminders;
     private ListAdapter listAdapter;
     private Button datePicker, timePicker;
     private int year, month, day, hour, minute;
@@ -46,14 +48,39 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         setContentView(R.layout.reminders_layout);
 
         listView = findViewById(R.id.listView);
-        reminders = new ArrayList<>();
+        activeReminders = new ArrayList<>();
+        archivedReminders = new ArrayList<>();
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        ArrayAdapter<Reminder> adapter = new ArrayAdapter<Reminder>(this, android.R.layout.simple_list_item_1, reminders);
+        ArrayAdapter<Reminder> adapter = new ArrayAdapter<Reminder>(this, android.R.layout.simple_list_item_1, activeReminders);
         listView.setAdapter(adapter);
 
-        archivedReminders = new ArrayList<>();
-        listAdapter = new ListAdapter(this, R.layout.reminders_layout, reminders, archivedReminders);
+        listAdapter = new ListAdapter(this, R.layout.reminders_layout, activeReminders, archivedReminders);
         listView.setAdapter(listAdapter);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Bundle bundle = getIntent().getExtras();
+
+        if (bundle != null) {
+            activeReminders = bundle.getParcelableArrayList("activeItems");
+            archivedReminders = bundle.getParcelableArrayList("archivedItems");
+            listAdapter = new ListAdapter(this, R.layout.reminders_layout, activeReminders, archivedReminders);
+            listView.setAdapter(listAdapter);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Intent intent = new Intent(RemindersActivity.this, ArchivedItemsActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("activeItems", activeReminders);
+        bundle.putParcelableArrayList("archivedReminders", archivedReminders);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     @Override
@@ -74,7 +101,7 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                 Intent intent = new Intent(RemindersActivity.this, ArchivedItemsActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putParcelableArrayList("archivedItems", archivedReminders);
-                bundle.putParcelableArrayList("activeItems", reminders);
+                bundle.putParcelableArrayList("activeItems", activeReminders);
                 intent.putExtras(bundle);
                 startActivity(intent);
                 return true;
@@ -101,7 +128,7 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                 String reminderText = reminderInput.getText().toString().trim();
 
                 if (reminderText.length() > 0) {
-                    saveReminder(new Reminder(reminderDate.getText().toString(), reminderTime.getText().toString(), reminderText));
+                    saveReminder(new Reminder(reminderDate.getText().toString(), reminderTime.getText().toString(), reminderText, activeReminders.size() + 1));
                 }
             }
         });
@@ -168,7 +195,8 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                     new TimePickerDialog.OnTimeSetListener() {
                         @Override
                         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                            textTime.setText(hourOfDay + ":" + minute);
+                            String minutes = minute <= 9 ? "0" + minute : String.valueOf(minute);
+                            textTime.setText(hourOfDay + ":" + minutes);
                         }
                     }, hour, minute, false);
 
@@ -177,8 +205,18 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void saveReminder(Reminder reminderInfo) {
-        this.reminders.add(reminderInfo);
+        this.activeReminders.add(reminderInfo);
         // Esto hace que cada vez que se agrega un reminder la vista se actualice
         this.listAdapter.notifyDataSetChanged();
+        recordNewReminder(reminderInfo);
+
+    }
+
+    private void recordNewReminder(Reminder reminder) {
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, String.valueOf(reminder.id));
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, reminder.description);
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "String");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 }

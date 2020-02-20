@@ -7,8 +7,10 @@ public class Reminder implements Parcelable {
     public String description;
     public String date;
     public String time;
+    public int id;
 
-    public Reminder(String date, String time, String description) {
+    public Reminder(String date, String time, String description, int id) {
+        this.id =  id;
         this.date = date;
         this.time = time;
         this.description = description;
