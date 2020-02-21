@@ -6,53 +6,45 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity"
     android:orientation="vertical"
-    android:gravity="center_horizontal"
-    android:background="@drawable/fondo">
+    android:gravity="center_horizontal">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="127dp"
-        app:srcCompat="@drawable/logo"></ImageView>
 
     <EditText
-        android:id="@+id/edittext_username"
-        android:layout_width="167dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="15dp"
-        android:background="#FFFFFF"
-        android:drawableLeft="@drawable/username"
-        android:hint="@string/username"
-         />
-
-    <EditText
-        android:id="@+id/edittext_password"
-        android:layout_width="167dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="20dp"
-        android:background="#FFFFFF"
-        android:drawableLeft="@drawable/password"
-        android:hint="@string/password" />
-    <Button
-        android:id="@+id/edittext_login"
-        android:layout_width="190dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="20dp"
-        android:background="#FFFFFF"
-        android:text="@string/login"></Button>
-    <LinearLayout
-        android:layout_width="wrap_content"
+        android:id="@+id/idEmail"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp">
+        android:hint="Inserte el correo electronico" />
 
-        <TextView
-            android:id="@+id/textview_signup"
-            android:layout_width="149dp"
+    <EditText
+        android:id="@+id/idUserName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Inserte el nombre de usuario" />
+
+    <EditText
+        android:id="@+id/idPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Inserte la contraseña" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/idSignUp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:paddingLeft="20dp"
-            android:textColor="#FFFFFF"
-            android:text="@string/not_registered">Desea registrase?
-        </TextView>
+            android:layout_weight="1"
+            android:text="Sign Up" />
+
+        <Button
+            android:id="@+id/idSignIn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Sign In" />
     </LinearLayout>
 
 
