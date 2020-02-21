@@ -50,13 +50,13 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         listView = findViewById(R.id.listView);
         activeReminders = new ArrayList<>();
         archivedReminders = new ArrayList<>();
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         ArrayAdapter<Reminder> adapter = new ArrayAdapter<Reminder>(this, android.R.layout.simple_list_item_1, activeReminders);
         listView.setAdapter(adapter);
 
         listAdapter = new ListAdapter(this, R.layout.reminders_layout, activeReminders, archivedReminders);
         listView.setAdapter(listAdapter);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
     }
 
     @Override
@@ -195,8 +195,9 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                     new TimePickerDialog.OnTimeSetListener() {
                         @Override
                         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                            String hour = hourOfDay <= 9 ? "0" + hourOfDay : String.valueOf(hourOfDay);
                             String minutes = minute <= 9 ? "0" + minute : String.valueOf(minute);
-                            textTime.setText(hourOfDay + ":" + minutes);
+                            textTime.setText(hour + ":" + minutes);
                         }
                     }, hour, minute, false);
 
