@@ -40,6 +40,12 @@ public class MainActivity extends AppCompatActivity {
                 signUp();
             }
         });
+        btnSignIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                signIn();
+            }
+        });
 
 
     }
@@ -64,5 +70,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+    private void signIn () {
+        mAuth.signInWithEmailAndPassword(edtEmail.getText().toString(), edtPassword.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(MainActivity.this, "Se ingresaron correctament las credenciales", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "Credenciales incorrectas", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 }
