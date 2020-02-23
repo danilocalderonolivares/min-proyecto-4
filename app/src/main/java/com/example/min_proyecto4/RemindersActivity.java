@@ -1,10 +1,14 @@
 package com.example.min_proyecto4;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -23,13 +27,19 @@ import android.widget.TimePicker;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.com.miniproyecto.adapters.ListAdapter;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.miniproyecto.models.NotificationHandler;
 import com.miniproyecto.models.Reminder;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.TimeZone;
+
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 public class RemindersActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -40,7 +50,7 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
     private Button datePicker, timePicker;
     private int year, month, day, hour, minute;
     private EditText reminderInput, reminderDate, reminderTime, textDate, textTime;
-    ;
+    private NotificationHandler notificationHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +67,7 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         listAdapter = new ListAdapter(this, R.layout.reminders_layout, activeReminders, archivedReminders);
         listView.setAdapter(listAdapter);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        notificationHandler = new NotificationHandler(this);
     }
 
     @Override
@@ -210,7 +221,7 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         // Esto hace que cada vez que se agrega un reminder la vista se actualice
         this.listAdapter.notifyDataSetChanged();
         recordNewReminder(reminderInfo);
-
+        setNotification(reminderInfo);
     }
 
     private void recordNewReminder(Reminder reminder) {
@@ -219,5 +230,31 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, reminder.description);
         bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "String");
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+    }
+
+    private void setNotification(Reminder reminder) {
+        final Calendar cal = Calendar.getInstance();
+        ContentResolver cr = this.getContentResolver();
+        ContentValues event = new ContentValues();
+        event.put(CalendarContract.Events.DTSTART, cal.getTimeInMillis() + 3 * 60 * 1000);
+        event.put(CalendarContract.Events.DTEND, cal.getTimeInMillis() + 2 * 60 * 1000);
+        event.put(CalendarContract.Events.TITLE, "Your reminder");
+        event.put(CalendarContract.Events.DESCRIPTION, reminder.description);
+        event.put(CalendarContract.Events.CALENDAR_ID, 1);
+        event.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().getID());
+        event.put(CalendarContract.Reminders.MINUTES, "2");
+
+        checkPermission(42, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR);
+        cr.insert(CalendarContract.Events.CONTENT_URI, event);
+    }
+
+    private void checkPermission(int callbackId, String... permissionsId) {
+        boolean permissions = true;
+        for (String p : permissionsId) {
+            permissions = permissions && ContextCompat.checkSelfPermission(this, p) == PERMISSION_GRANTED;
+        }
+
+        if (!permissions)
+            ActivityCompat.requestPermissions(this, permissionsId, callbackId);
     }
 }
