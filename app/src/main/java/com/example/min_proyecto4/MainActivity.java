@@ -19,7 +19,8 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
     private EditText edtEmail, edtUserName, edtPassword;
-    private Button btnSignUp, btnSignIn;
+    private Button  btnSignIn;
+    private TextView signUpLink;
     private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,26 +28,28 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //Inputs
         edtEmail = findViewById(R.id.idEmail);
-        edtUserName = findViewById(R.id.idUserName);
+//        edtUserName = findViewById(R.id.idUserName);
         edtPassword = findViewById(R.id.idPassword);
+        signUpLink = findViewById(R.id.signupLink);
         // botones
         btnSignIn = findViewById(R.id.idSignIn);
-        btnSignUp = findViewById(R.id.idSignUp);
 
+        //
         mAuth = FirebaseAuth.getInstance();
-        btnSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                signUp();
-            }
-        });
+
+
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 signIn();
             }
         });
-
+        signUpLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signUpViewTransition();
+            }
+        });
 
     }
 
@@ -56,31 +59,43 @@ public class MainActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             //siguiente actividad
+            ingresoApp();
+
         }
     }
-    private void signUp() {
-        mAuth.createUserWithEmailAndPassword(edtEmail.getText().toString(), edtPassword.getText().toString()).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()){
-                    Toast.makeText(MainActivity.this, "Autenticación Correcta", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(MainActivity.this, "Falló de autenticación", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
-    }
+//    private void signUp() {
+//        mAuth.createUserWithEmailAndPassword(edtEmail.getText().toString(), edtPassword.getText().toString()).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+//            @Override
+//            public void onComplete(@NonNull Task<AuthResult> task) {
+//                if (task.isSuccessful()){
+//                    Toast.makeText(MainActivity.this, "Autenticación Correcta", Toast.LENGTH_LONG).show();
+//                } else {
+//                    Toast.makeText(MainActivity.this, "Falló de autenticación", Toast.LENGTH_LONG).show();
+//                }
+//            }
+//        });
+//
+//    }
     private void signIn () {
         mAuth.signInWithEmailAndPassword(edtEmail.getText().toString(), edtPassword.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     Toast.makeText(MainActivity.this, "Se ingresaron correctament las credenciales", Toast.LENGTH_LONG).show();
+                    ingresoApp();
                 } else {
                     Toast.makeText(MainActivity.this, "Credenciales incorrectas", Toast.LENGTH_LONG).show();
                 }
             }
         });
+    }
+    private void ingresoApp() {
+
+        Intent intent = new Intent(this, ingresoAppTest.class);
+        startActivity(intent);
+    }
+    private void signUpViewTransition() {
+        Intent intent = new Intent(this, SignUp.class);
+        startActivity(intent);
     }
 }
