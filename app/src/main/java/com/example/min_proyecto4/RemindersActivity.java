@@ -7,6 +7,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.text.Editable;
@@ -236,16 +237,19 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         final Calendar cal = Calendar.getInstance();
         ContentResolver cr = this.getContentResolver();
         ContentValues event = new ContentValues();
-        event.put(CalendarContract.Events.DTSTART, cal.getTimeInMillis() + 3 * 60 * 1000);
+        event.put(CalendarContract.Events.DTSTART, cal.getTimeInMillis() + 2 * 60 * 1000);
         event.put(CalendarContract.Events.DTEND, cal.getTimeInMillis() + 2 * 60 * 1000);
-        event.put(CalendarContract.Events.TITLE, "Your reminder");
-        event.put(CalendarContract.Events.DESCRIPTION, reminder.description);
+        event.put(CalendarContract.Events.TITLE, reminder.description );
         event.put(CalendarContract.Events.CALENDAR_ID, 1);
         event.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().getID());
-        event.put(CalendarContract.Reminders.MINUTES, "2");
-
         checkPermission(42, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR);
-        cr.insert(CalendarContract.Events.CONTENT_URI, event);
+        Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, event);
+
+        ContentValues reminders = new ContentValues();
+        reminders.put(CalendarContract.Reminders.EVENT_ID, Long.parseLong(uri.getLastPathSegment()));
+        reminders.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
+        reminders.put(CalendarContract.Reminders.MINUTES, 1);
+        cr.insert(CalendarContract.Reminders.CONTENT_URI, reminders);
     }
 
     private void checkPermission(int callbackId, String... permissionsId) {
