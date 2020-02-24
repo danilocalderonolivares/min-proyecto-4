@@ -142,7 +142,8 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
 
                 if (reminderText.length() > 0) {
                     try {
-                        saveReminder(new Reminder(yearSelected, monthSelected, daySelected, minuteSelected, hourSelected, reminderText, activeReminders.size() + 1));
+                        saveReminder(new Reminder(yearSelected, monthSelected, daySelected, minuteSelected, hourSelected, reminderText, activeReminders.size() + 1,
+                                reminderDate.getText().toString(), reminderTime.getText().toString()));
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }

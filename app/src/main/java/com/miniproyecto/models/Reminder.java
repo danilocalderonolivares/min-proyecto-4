@@ -14,7 +14,7 @@ public class Reminder implements Parcelable {
     public String time;
     public int id;
 
-    public Reminder(int year, int month, int day, int minutes, int hour, String description, int id) {
+    public Reminder(int year, int month, int day, int minutes, int hour, String description, int id, String date, String time) {
         this.id =  id;
         this.year = year;
         this.month = month;
@@ -22,6 +22,8 @@ public class Reminder implements Parcelable {
         this.minutes = minutes;
         this.hour = hour;
         this.description = description;
+        this.time = time;
+        this.date = date;
     }
 
     @Override
@@ -31,8 +33,6 @@ public class Reminder implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        this.date = day + "-" + month + "-" + year;
-        this.time = hour + ":" + minutes;
         dest.writeString(date);
         dest.writeString(time);
         dest.writeString(description);
