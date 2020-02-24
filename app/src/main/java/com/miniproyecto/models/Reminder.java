@@ -5,14 +5,22 @@ import android.os.Parcelable;
 
 public class Reminder implements Parcelable {
     public String description;
+    public int month;
+    public int year;
+    public int day;
+    public int hour;
+    public int minutes;
     public String date;
     public String time;
     public int id;
 
-    public Reminder(String date, String time, String description, int id) {
+    public Reminder(int year, int month, int day, int minutes, int hour, String description, int id) {
         this.id =  id;
-        this.date = date;
-        this.time = time;
+        this.year = year;
+        this.month = month;
+        this.day = day;
+        this.minutes = minutes;
+        this.hour = hour;
         this.description = description;
     }
 
@@ -23,6 +31,8 @@ public class Reminder implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        this.date = day + "-" + month + "-" + year;
+        this.time = hour + ":" + minutes;
         dest.writeString(date);
         dest.writeString(time);
         dest.writeString(description);

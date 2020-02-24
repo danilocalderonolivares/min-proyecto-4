@@ -36,6 +36,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.miniproyecto.models.NotificationHandler;
 import com.miniproyecto.models.Reminder;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -49,7 +50,7 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
     private ArrayList<Reminder> activeReminders, archivedReminders;
     private ListAdapter listAdapter;
     private Button datePicker, timePicker;
-    private int year, month, day, hour, minute;
+    private int year, month, day, hour, minute, yearSelected, monthSelected, daySelected, minuteSelected, hourSelected;
     private EditText reminderInput, reminderDate, reminderTime, textDate, textTime;
     private NotificationHandler notificationHandler;
 
@@ -140,7 +141,11 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                 String reminderText = reminderInput.getText().toString().trim();
 
                 if (reminderText.length() > 0) {
-                    saveReminder(new Reminder(reminderDate.getText().toString(), reminderTime.getText().toString(), reminderText, activeReminders.size() + 1));
+                    try {
+                        saveReminder(new Reminder(yearSelected, monthSelected, daySelected, minuteSelected, hourSelected, reminderText, activeReminders.size() + 1));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -191,6 +196,9 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                     new DatePickerDialog.OnDateSetListener() {
                         @Override
                         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                            yearSelected = year;
+                            monthSelected =  month;
+                            daySelected = dayOfMonth;
                             textDate.setText(dayOfMonth + "-" + (month + 1) + "-" + year);
                         }
                     }, year, month, day);
@@ -207,6 +215,8 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                     new TimePickerDialog.OnTimeSetListener() {
                         @Override
                         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                            hourSelected =  hourOfDay;
+                            minuteSelected = minute;
                             String hour = hourOfDay <= 9 ? "0" + hourOfDay : String.valueOf(hourOfDay);
                             String minutes = minute <= 9 ? "0" + minute : String.valueOf(minute);
                             textTime.setText(hour + ":" + minutes);
@@ -217,7 +227,7 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
-    private void saveReminder(Reminder reminderInfo) {
+    private void saveReminder(Reminder reminderInfo) throws ParseException {
         this.activeReminders.add(reminderInfo);
         // Esto hace que cada vez que se agrega un reminder la vista se actualice
         this.listAdapter.notifyDataSetChanged();
@@ -234,12 +244,22 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void setNotification(Reminder reminder) {
+        long startMillis = 0;
+        long endMillis = 0;
+
+        Calendar beginTime = Calendar.getInstance();
+        beginTime.set(reminder.year, reminder.month, reminder.day, reminder.hour, reminder.minutes);
+        startMillis = beginTime.getTimeInMillis();
+        Calendar endTime = Calendar.getInstance();
+        endTime.set(reminder.year, reminder.month, reminder.day, reminder.hour, reminder.minutes + 30);
+        endMillis = endTime.getTimeInMillis();
+
         final Calendar cal = Calendar.getInstance();
         ContentResolver cr = this.getContentResolver();
         ContentValues event = new ContentValues();
-        event.put(CalendarContract.Events.DTSTART, cal.getTimeInMillis() + 2 * 60 * 1000);
-        event.put(CalendarContract.Events.DTEND, cal.getTimeInMillis() + 2 * 60 * 1000);
-        event.put(CalendarContract.Events.TITLE, reminder.description );
+        event.put(CalendarContract.Events.DTSTART, startMillis);
+        event.put(CalendarContract.Events.DTEND, endMillis);
+        event.put(CalendarContract.Events.TITLE, reminder.description);
         event.put(CalendarContract.Events.CALENDAR_ID, 1);
         event.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().getID());
         checkPermission(42, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR);
