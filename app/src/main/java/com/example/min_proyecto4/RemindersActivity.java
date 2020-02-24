@@ -50,9 +50,8 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
     private ArrayList<Reminder> activeReminders, archivedReminders;
     private ListAdapter listAdapter;
     private Button datePicker, timePicker;
-    private int year, month, day, hour, minute, yearSelected, monthSelected, daySelected, minuteSelected, hourSelected;
+    private int yearSelected, monthSelected, minuteSelected, hourSelected, daySelected;
     private EditText reminderInput, reminderDate, reminderTime, textDate, textTime;
-    private NotificationHandler notificationHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +68,7 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         listAdapter = new ListAdapter(this, R.layout.reminders_layout, activeReminders, archivedReminders);
         listView.setAdapter(listAdapter);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        notificationHandler = new NotificationHandler(this);
+        // new NotificationHandler(this);
     }
 
     @Override
@@ -189,16 +188,16 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
     public void onClick(View view) {
         if (view == datePicker) {
             final Calendar c = Calendar.getInstance();
-            year = c.get(Calendar.YEAR);
-            month = c.get(Calendar.MONTH);
-            day = c.get(Calendar.DAY_OF_MONTH);
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
 
             DatePickerDialog datePickerDialog = new DatePickerDialog(this,
                     new DatePickerDialog.OnDateSetListener() {
                         @Override
                         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                             yearSelected = year;
-                            monthSelected =  month;
+                            monthSelected = month;
                             daySelected = dayOfMonth;
                             textDate.setText(dayOfMonth + "-" + (month + 1) + "-" + year);
                         }
@@ -209,14 +208,14 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
 
         if (view == timePicker) {
             final Calendar c = Calendar.getInstance();
-            hour = c.get(Calendar.HOUR_OF_DAY);
-            minute = c.get(Calendar.MINUTE);
+            int hour = c.get(Calendar.HOUR_OF_DAY);
+            int minute = c.get(Calendar.MINUTE);
 
             TimePickerDialog timePickerDialog = new TimePickerDialog(this,
                     new TimePickerDialog.OnTimeSetListener() {
                         @Override
                         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                            hourSelected =  hourOfDay;
+                            hourSelected = hourOfDay;
                             minuteSelected = minute;
                             String hour = hourOfDay <= 9 ? "0" + hourOfDay : String.valueOf(hourOfDay);
                             String minutes = minute <= 9 ? "0" + minute : String.valueOf(minute);
