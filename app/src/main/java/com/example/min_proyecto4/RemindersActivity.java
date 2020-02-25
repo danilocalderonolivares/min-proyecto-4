@@ -24,6 +24,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -33,7 +34,6 @@ import androidx.core.content.ContextCompat;
 
 import com.com.miniproyecto.adapters.ListAdapter;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.miniproyecto.models.NotificationHandler;
 import com.miniproyecto.models.Reminder;
 
 import java.text.ParseException;
@@ -139,13 +139,15 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                 // Trim elimina los espacios al final si es que los hay
                 String reminderText = reminderInput.getText().toString().trim();
 
-                if (reminderText.length() > 0) {
+                if (reminderText.length() > 0 && validateFields()) {
                     try {
                         saveReminder(new Reminder(yearSelected, monthSelected, daySelected, minuteSelected, hourSelected, reminderText, activeReminders.size() + 1,
                                 reminderDate.getText().toString(), reminderTime.getText().toString()));
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Invalid fields", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -203,6 +205,7 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                         }
                     }, year, month, day);
 
+            datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
             datePickerDialog.show();
         }
 
@@ -223,7 +226,24 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                         }
                     }, hour, minute, false);
 
+
             timePickerDialog.show();
+        }
+    }
+
+    private boolean validateFields() {
+        Calendar calendar = Calendar.getInstance();
+        int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+        int minutesOfDay = calendar.get(Calendar.MINUTE);
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        String reminderText = textDate.getText().toString();
+
+        if (daySelected > dayOfMonth && !TextUtils.isEmpty(reminderText)) {
+            return true;
+        } else if (daySelected == dayOfMonth && hourSelected >= hourOfDay && minuteSelected > minutesOfDay && !TextUtils.isEmpty(reminderText)) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -232,7 +252,7 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         // Esto hace que cada vez que se agrega un reminder la vista se actualice
         this.listAdapter.notifyDataSetChanged();
         recordNewReminder(reminderInfo);
-        setNotification(reminderInfo);
+        // setNotification(reminderInfo);
     }
 
     private void recordNewReminder(Reminder reminder) {
