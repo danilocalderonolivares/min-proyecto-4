@@ -251,7 +251,7 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         // Esto hace que cada vez que se agrega un reminder la vista se actualice
         this.listAdapter.notifyDataSetChanged();
         recordNewReminder(reminderInfo);
-        // setNotification(reminderInfo);
+        setNotification(reminderInfo);
     }
 
     private void recordNewReminder(Reminder reminder) {
