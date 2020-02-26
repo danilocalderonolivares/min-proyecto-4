@@ -226,7 +226,6 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                         }
                     }, hour, minute, false);
 
-
             timePickerDialog.show();
         }
     }
@@ -264,8 +263,8 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void setNotification(Reminder reminder) {
-        long startMillis = 0;
-        long endMillis = 0;
+        long startMillis;
+        long endMillis;
 
         Calendar beginTime = Calendar.getInstance();
         beginTime.set(reminder.year, reminder.month, reminder.day, reminder.hour, reminder.minutes);
@@ -294,11 +293,13 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
 
     private void checkPermission(int callbackId, String... permissionsId) {
         boolean permissions = true;
+
         for (String p : permissionsId) {
             permissions = permissions && ContextCompat.checkSelfPermission(this, p) == PERMISSION_GRANTED;
         }
 
-        if (!permissions)
+        if (!permissions) {
             ActivityCompat.requestPermissions(this, permissionsId, callbackId);
+        }
     }
 }
