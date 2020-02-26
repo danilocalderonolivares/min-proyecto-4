@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private void ingresoApp() {
 
-        Intent intent = new Intent(this, ingresoAppTest.class);
+        Intent intent = new Intent(this, RemindersActivity.class);
         startActivity(intent);
     }
     private void signUpViewTransition() {
