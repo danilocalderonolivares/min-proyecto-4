@@ -147,7 +147,7 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                         e.printStackTrace();
                     }
                 } else {
-                    Toast.makeText(getApplicationContext(), "Invalid fields", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Campos inválidos", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -235,11 +235,14 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
         int minutesOfDay = calendar.get(Calendar.MINUTE);
         int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH);
         String reminderText = textDate.getText().toString();
 
-        if (daySelected > dayOfMonth && !TextUtils.isEmpty(reminderText)) {
+        if (daySelected > dayOfMonth && !TextUtils.isEmpty(reminderText) || monthSelected > month && !TextUtils.isEmpty(reminderText)) {
             return true;
-        } else if (daySelected == dayOfMonth && hourSelected >= hourOfDay && minuteSelected > minutesOfDay && !TextUtils.isEmpty(reminderText)) {
+        } else if (daySelected == dayOfMonth && hourSelected > hourOfDay && !TextUtils.isEmpty(reminderText)) {
+            return true;
+        } else if (hourSelected == hourOfDay && minuteSelected > minutesOfDay && !TextUtils.isEmpty(reminderText)) {
             return true;
         } else {
             return false;
@@ -287,7 +290,7 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         ContentValues reminders = new ContentValues();
         reminders.put(CalendarContract.Reminders.EVENT_ID, Long.parseLong(uri.getLastPathSegment()));
         reminders.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
-        reminders.put(CalendarContract.Reminders.MINUTES, 1);
+        reminders.put(CalendarContract.Reminders.MINUTES, 10);
         cr.insert(CalendarContract.Reminders.CONTENT_URI, reminders);
     }
 
