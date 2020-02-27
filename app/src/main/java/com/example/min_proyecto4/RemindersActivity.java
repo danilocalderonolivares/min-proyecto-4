@@ -205,6 +205,8 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                         }
                     }, year, month, day);
 
+            datePickerDialog.setButton(DatePickerDialog.BUTTON_POSITIVE, "Aceptar", datePickerDialog);
+            datePickerDialog.setButton(DatePickerDialog.BUTTON_NEGATIVE, "Cancelar", datePickerDialog);
             datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
             datePickerDialog.show();
         }
@@ -226,6 +228,8 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                         }
                     }, hour, minute, false);
 
+            timePickerDialog.setButton(TimePickerDialog.BUTTON_POSITIVE, "Aceptar", timePickerDialog);
+            timePickerDialog.setButton(TimePickerDialog.BUTTON_NEGATIVE, "Cancelar", timePickerDialog);
             timePickerDialog.show();
         }
     }
