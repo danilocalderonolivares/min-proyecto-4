@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 
 import com.example.min_proyecto4.R;
+import com.example.min_proyecto4.RemindersActivity;
 import com.miniproyecto.models.Reminder;
 import com.miniproyecto.models.ViewHolder;
 
@@ -88,5 +89,15 @@ public class ListAdapter extends BaseAdapter {
                 notifyDataSetChanged();
             }
         });
+        ImageButton signOutBtn = viewToRender.findViewById(R.id.signOut);
+        signOutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RemindersActivity signOut = new RemindersActivity();
+                signOut.signOut();
+            }
+        });
     }
+
+
 }

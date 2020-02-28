@@ -34,6 +34,7 @@ import androidx.core.content.ContextCompat;
 
 import com.com.miniproyecto.adapters.ListAdapter;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.auth.FirebaseAuth;
 import com.miniproyecto.models.Reminder;
 
 import java.text.ParseException;
@@ -57,11 +58,9 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.reminders_layout);
-
         listView = findViewById(R.id.listView);
         activeReminders = new ArrayList<>();
         archivedReminders = new ArrayList<>();
-
         ArrayAdapter<Reminder> adapter = new ArrayAdapter<Reminder>(this, android.R.layout.simple_list_item_1, activeReminders);
         listView.setAdapter(adapter);
 
@@ -301,5 +300,12 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         if (!permissions) {
             ActivityCompat.requestPermissions(this, permissionsId, callbackId);
         }
+    }
+    //Este metodo maneja la logica para terminar la sesion generada por firebase, es invocada por la accion de un btn que se llama signOutButton
+    public void signOut() {
+        FirebaseAuth.getInstance().signOut();
+        Toast.makeText(this, "Se cerro correctamemte la sesopm",Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 }
