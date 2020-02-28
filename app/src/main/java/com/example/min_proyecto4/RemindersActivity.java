@@ -116,6 +116,9 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                 intent.putExtras(bundle);
                 startActivity(intent);
                 return true;
+            case R.id.signOut:
+                signOut();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -308,11 +311,12 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
             ActivityCompat.requestPermissions(this, permissionsId, callbackId);
         }
     }
+
     //Este metodo maneja la logica para terminar la sesion generada por firebase, es invocada por la accion de un btn que se llama signOutButton
-    public void signOut() {
+    private void signOut() {
         FirebaseAuth.getInstance().signOut();
-        Toast.makeText(this, "Se cerro correctamemte la sesopm",Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Se cerró correctamente la sesión", Toast.LENGTH_LONG).show();
         Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        this.startActivity(intent);
     }
 }

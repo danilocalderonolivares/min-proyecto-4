@@ -89,15 +89,5 @@ public class ListAdapter extends BaseAdapter {
                 notifyDataSetChanged();
             }
         });
-        ImageButton signOutBtn = viewToRender.findViewById(R.id.signOut);
-        signOutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                RemindersActivity signOut = new RemindersActivity();
-                signOut.signOut();
-            }
-        });
     }
-
-
 }
