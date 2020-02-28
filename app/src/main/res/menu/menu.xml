@@ -3,6 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/signOut"
+        android:icon="@drawable/exit"
+        android:title="Salir"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/archivedItems"
         android:icon="@android:drawable/ic_menu_recent_history"
         android:title="Agregar"

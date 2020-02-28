@@ -63,19 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-//    private void signUp() {
-//        mAuth.createUserWithEmailAndPassword(edtEmail.getText().toString(), edtPassword.getText().toString()).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-//            @Override
-//            public void onComplete(@NonNull Task<AuthResult> task) {
-//                if (task.isSuccessful()){
-//                    Toast.makeText(MainActivity.this, "Autenticación Correcta", Toast.LENGTH_LONG).show();
-//                } else {
-//                    Toast.makeText(MainActivity.this, "Falló de autenticación", Toast.LENGTH_LONG).show();
-//                }
-//            }
-//        });
-//
-//    }
+
     private void signIn () {
         mAuth.signInWithEmailAndPassword(edtEmail.getText().toString(), edtPassword.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
