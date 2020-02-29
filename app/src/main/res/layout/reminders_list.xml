@@ -20,12 +20,11 @@
 
     <ImageButton
         android:id="@+id/archiveButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="35dp"
+        android:layout_height="32dp"
         android:background="@null"
         android:paddingRight="4dp"
-        android:paddingTop="6dp"
-        android:src="@android:drawable/checkbox_on_background"
+        android:src="@android:drawable/ic_menu_save"
         app:layout_constraintEnd_toStartOf="@+id/deleteButton"
         tools:layout_editor_absoluteY="1dp" />
 

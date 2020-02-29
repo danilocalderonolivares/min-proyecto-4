@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
+import android.speech.RecognizerIntent;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -27,12 +28,14 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.com.miniproyecto.adapters.ListAdapter;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.miniproyecto.models.Reminder;
@@ -40,12 +43,14 @@ import com.miniproyecto.models.Reminder;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 public class RemindersActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private static final int REQUEST_CODE_SPEECH_INPUT = 100;
     private FirebaseAnalytics mFirebaseAnalytics;
     private ListView listView;
     private ArrayList<Reminder> activeReminders, archivedReminders;
@@ -58,16 +63,62 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.reminders_layout);
+        instantiateElements();
+        setAdapters();
+        // new NotificationHandler(this);
+    }
+
+    private void instantiateElements() {
+        FloatingActionButton recordVoiceButton = findViewById(R.id.recorderVoiceButton);
+        recordVoiceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkPermission(42, Manifest.permission.RECORD_AUDIO);
+                recordVoice();
+            }
+        });
+
         listView = findViewById(R.id.listView);
         activeReminders = new ArrayList<>();
         archivedReminders = new ArrayList<>();
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+    }
+
+    private void setAdapters() {
         ArrayAdapter<Reminder> adapter = new ArrayAdapter<Reminder>(this, android.R.layout.simple_list_item_1, activeReminders);
         listView.setAdapter(adapter);
 
         listAdapter = new ListAdapter(this, R.layout.reminders_layout, activeReminders, archivedReminders);
         listView.setAdapter(listAdapter);
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        // new NotificationHandler(this);
+    }
+
+    private void recordVoice() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Graba tu recordatorio");
+
+        try {
+            startActivityForResult(intent, REQUEST_CODE_SPEECH_INPUT);
+        } catch (Exception e) {
+            Toast.makeText(this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case REQUEST_CODE_SPEECH_INPUT: {
+                if (resultCode == RESULT_OK && null != data) {
+                    ArrayList<String> recordedVoice = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    String reminder = recordedVoice.get(0);
+                    System.out.println(reminder);
+                }
+                break;
+            }
+        }
     }
 
     @Override

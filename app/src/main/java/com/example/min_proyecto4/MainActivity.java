@@ -18,9 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
-    private EditText edtEmail, edtUserName, edtPassword;
-    private Button btnSignIn;
-    private TextView signUpLink;
+    private EditText edtEmail, edtPassword;
     private FirebaseAuth mAuth;
 
     @Override
@@ -30,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
         edtEmail = findViewById(R.id.idEmail);
         edtPassword = findViewById(R.id.idPassword);
-        signUpLink = findViewById(R.id.signupLink);
-        btnSignIn = findViewById(R.id.idSignIn);
+        TextView signUpLink = findViewById(R.id.signupLink);
+        Button btnSignIn = findViewById(R.id.idSignIn);
         mAuth = FirebaseAuth.getInstance();
 
         btnSignIn.setOnClickListener(new View.OnClickListener() {
@@ -63,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    Toast.makeText(MainActivity.this, "Se ingresaron correctament las credenciales", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "Se ingresaron correctamente las credenciales", Toast.LENGTH_LONG).show();
                     ingresoApp();
                 } else {
                     Toast.makeText(MainActivity.this, "Credenciales incorrectas", Toast.LENGTH_LONG).show();
