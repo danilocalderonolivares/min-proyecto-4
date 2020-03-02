@@ -56,8 +56,10 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
     private ArrayList<Reminder> activeReminders, archivedReminders;
     private ListAdapter listAdapter;
     private Button datePicker, timePicker;
+    FloatingActionButton recordVoiceButton;
     private int yearSelected, monthSelected, minuteSelected, hourSelected, daySelected;
     private EditText reminderInput, reminderDate, reminderTime, textDate, textTime;
+    private boolean micPressed, exitClicked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,19 +67,99 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         setContentView(R.layout.reminders_layout);
         instantiateElements();
         setAdapters();
+        setRecorderButton();
+        micPressed = false;
         // new NotificationHandler(this);
     }
 
-    private void instantiateElements() {
-        FloatingActionButton recordVoiceButton = findViewById(R.id.recorderVoiceButton);
+    @Override
+    public void onResume() {
+        super.onResume();
+        recordVoiceButton.show();
+        micPressed = false;
+        Bundle bundle = getIntent().getExtras();
+
+        if (bundle != null) {
+            activeReminders = bundle.getParcelableArrayList("activeItems");
+            archivedReminders = bundle.getParcelableArrayList("archivedItems");
+            listAdapter = new ListAdapter(this, R.layout.reminders_layout, activeReminders, archivedReminders);
+            listView.setAdapter(listAdapter);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        recordVoiceButton.hide();
+        if (micPressed) {
+            recordVoice();
+        } else if (exitClicked) {
+            signOut();
+        } else {
+            Intent intent = new Intent(RemindersActivity.this, ArchivedReminders.class);
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList("activeItems", activeReminders);
+            bundle.putParcelableArrayList("archivedReminders", archivedReminders);
+            intent.putExtras(bundle);
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        // Es el xml en res/menu
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.addItem:
+                showAlertDialog();
+                return true;
+            case R.id.archivedItems:
+                onPause();
+                return true;
+            case R.id.signOut:
+                exitClicked = true;
+                onPause();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case REQUEST_CODE_SPEECH_INPUT: {
+                if (resultCode == RESULT_OK && null != data) {
+                    ArrayList<String> recordedVoice = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    String reminder = recordedVoice.get(0);
+                    System.out.println(reminder);
+                }
+                break;
+            }
+        }
+    }
+
+    private void setRecorderButton() {
+        recordVoiceButton = findViewById(R.id.recorderVoiceButton);
         recordVoiceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 checkPermission(42, Manifest.permission.RECORD_AUDIO);
-                recordVoice();
+                micPressed = true;
+                onPause();
             }
         });
+    }
 
+    private void instantiateElements() {
         listView = findViewById(R.id.listView);
         activeReminders = new ArrayList<>();
         archivedReminders = new ArrayList<>();
@@ -102,76 +184,6 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
             startActivityForResult(intent, REQUEST_CODE_SPEECH_INPUT);
         } catch (Exception e) {
             Toast.makeText(this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        switch (requestCode) {
-            case REQUEST_CODE_SPEECH_INPUT: {
-                if (resultCode == RESULT_OK && null != data) {
-                    ArrayList<String> recordedVoice = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    String reminder = recordedVoice.get(0);
-                    System.out.println(reminder);
-                }
-                break;
-            }
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Bundle bundle = getIntent().getExtras();
-
-        if (bundle != null) {
-            activeReminders = bundle.getParcelableArrayList("activeItems");
-            archivedReminders = bundle.getParcelableArrayList("archivedItems");
-            listAdapter = new ListAdapter(this, R.layout.reminders_layout, activeReminders, archivedReminders);
-            listView.setAdapter(listAdapter);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Intent intent = new Intent(RemindersActivity.this, ArchivedItemsActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("activeItems", activeReminders);
-        bundle.putParcelableArrayList("archivedReminders", archivedReminders);
-        intent.putExtras(bundle);
-        startActivity(intent);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        // Es el xml en res/menu
-        inflater.inflate(R.menu.menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.addItem:
-                showAlertDialog();
-                return true;
-            case R.id.archivedItems:
-                Intent intent = new Intent(RemindersActivity.this, ArchivedItemsActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("archivedItems", archivedReminders);
-                bundle.putParcelableArrayList("activeItems", activeReminders);
-                intent.putExtras(bundle);
-                startActivity(intent);
-                return true;
-            case R.id.signOut:
-                signOut();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
     }
 
