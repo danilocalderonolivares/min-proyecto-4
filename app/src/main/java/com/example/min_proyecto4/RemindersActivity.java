@@ -140,7 +140,11 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                 if (resultCode == RESULT_OK && null != data) {
                     ArrayList<String> recordedVoice = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     String reminder = recordedVoice.get(0);
-                    System.out.println(reminder);
+                    try {
+                        saveReminder(new Reminder(reminder, activeReminders.size() + 1, true));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                 }
                 break;
             }
@@ -175,9 +179,15 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void recordVoice() {
+        String language = "es";
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, language);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, language);
+        intent.putExtra(RecognizerIntent.EXTRA_SUPPORTED_LANGUAGES, language);
+        intent.putExtra(RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, language);
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, language);
+        intent.putExtra(RecognizerIntent.EXTRA_RESULTS, language);
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Graba tu recordatorio");
 
         try {
@@ -207,7 +217,7 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                 if (reminderText.length() > 0 && validateFields()) {
                     try {
                         saveReminder(new Reminder(yearSelected, monthSelected, daySelected, minuteSelected, hourSelected, reminderText, activeReminders.size() + 1,
-                                reminderDate.getText().toString(), reminderTime.getText().toString()));
+                                reminderDate.getText().toString(), reminderTime.getText().toString(), false));
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -323,7 +333,10 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         // Esto hace que cada vez que se agrega un reminder la vista se actualice
         this.listAdapter.notifyDataSetChanged();
         recordNewReminder(reminderInfo);
-        setNotification(reminderInfo);
+
+        if(!reminderInfo.isAudio) {
+            setNotification(reminderInfo);
+        }
     }
 
     private void recordNewReminder(Reminder reminder) {
