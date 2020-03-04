@@ -43,7 +43,6 @@ import com.miniproyecto.models.Reminder;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
@@ -75,16 +74,17 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
     @Override
     public void onResume() {
         super.onResume();
-        recordVoiceButton.show();
-        micPressed = false;
         Bundle bundle = getIntent().getExtras();
+        recordVoiceButton.show();
 
-        if (bundle != null) {
+        if (bundle != null && !micPressed) {
             activeReminders = bundle.getParcelableArrayList("activeItems");
             archivedReminders = bundle.getParcelableArrayList("archivedItems");
             listAdapter = new ListAdapter(this, R.layout.reminders_layout, activeReminders, archivedReminders);
             listView.setAdapter(listAdapter);
         }
+
+        micPressed = false;
     }
 
     @Override
@@ -334,7 +334,7 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         this.listAdapter.notifyDataSetChanged();
         recordNewReminder(reminderInfo);
 
-        if(!reminderInfo.isAudio) {
+        if (!reminderInfo.isAudio) {
             setNotification(reminderInfo);
         }
     }
