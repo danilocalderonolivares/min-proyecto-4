@@ -154,41 +154,30 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         inflater.inflate(R.menu.menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
-//    @Override
-//    public vo onOptionsItemSelected(@NonNull MenuItem item) {
-//        switch (item.getItemId()) {
-//            case R.id.addItem:
-//                showAlertDialog();
-//                return true;
-//            case R.id.archivedItems:
-//                Intent intent = new Intent(RemindersActivity.this, ArchivedItemsActivity.class);
-//                Bundle bundle = new Bundle();
-//                bundle.putParcelableArrayList("archivedItems", archivedReminders);
-//                bundle.putParcelableArrayList("activeItems", activeReminders);
-//                intent.putExtras(bundle);
-//                startActivity(intent);
-//                return true;
-//            case R.id.logoutItem:
-//                mAuth.signOut();
-//                finish();
-//                break;
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//    }
-//Intent intent = new Intent(this, MainActivity.class);
-//        this.startActivity(intent);
-
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
+            case R.id.addItem:
+                showAlertDialog();
+                return true;
+            case R.id.archivedItems:
+                Intent intent = new Intent(RemindersActivity.this, ArchivedItemsActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList("archivedItems", archivedReminders);
+                bundle.putParcelableArrayList("activeItems", activeReminders);
+                intent.putExtras(bundle);
+                startActivity(intent);
+                return true;
             case R.id.logoutItem:
-               mAuth.signOut();
-               finish();
+                mAuth.signOut();
+                Intent intentsignout = new Intent(this, MainActivity.class);
+                startActivity(intentsignout);
+                finish();
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     public void onBackPressed() {

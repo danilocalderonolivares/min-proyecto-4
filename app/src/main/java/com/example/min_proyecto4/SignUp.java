@@ -57,6 +57,7 @@ public class SignUp extends AppCompatActivity {
                     Toast.makeText(SignUp.this, "Se registro correctamente", Toast.LENGTH_LONG).show();
                     FirebaseUser user = mAuth.getCurrentUser();
                     user.sendEmailVerification();
+                    signInViewTransition();
                 } else {
                     Toast.makeText(SignUp.this, "Falló registro, intentarlo mas tarde", Toast.LENGTH_LONG).show();
                 }
@@ -68,5 +69,6 @@ public class SignUp extends AppCompatActivity {
     private void signInViewTransition() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+        finish();
     }
 }
