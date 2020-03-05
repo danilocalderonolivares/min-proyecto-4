@@ -2,9 +2,12 @@ package com.example.min_proyecto4;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.com.miniproyecto.adapters.ArchivedItemsAdapter;
@@ -71,4 +74,6 @@ public class ArchivedItemsActivity extends AppCompatActivity {
             listView.setAdapter(itemsAdapter);
         }
     }
+
+
 }

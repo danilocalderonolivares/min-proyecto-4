@@ -52,7 +52,8 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
-            ingresoApp();
+            Intent intent = new Intent(MainActivity.this, RemindersActivity.class);
+            startActivity(intent);
         }
     }
 
@@ -62,18 +63,19 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     Toast.makeText(MainActivity.this, "Se ingresaron correctamente las credenciales", Toast.LENGTH_LONG).show();
-                    ingresoApp();
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    Intent intent = new Intent(MainActivity.this, RemindersActivity.class);
+                    startActivity(intent);
+
                 } else {
                     Toast.makeText(MainActivity.this, "Credenciales incorrectas", Toast.LENGTH_LONG).show();
+
+
                 }
             }
         });
     }
 
-    private void ingresoApp() {
-        Intent intent = new Intent(this, RemindersActivity.class);
-        startActivity(intent);
-    }
 
     private void signUpViewTransition() {
         Intent intent = new Intent(this, SignUp.class);

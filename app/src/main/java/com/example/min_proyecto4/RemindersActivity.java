@@ -58,7 +58,7 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
     private Button datePicker, timePicker;
     private int yearSelected, monthSelected, minuteSelected, hourSelected, daySelected;
     private EditText reminderInput, reminderDate, reminderTime, textDate, textTime;
-
+    private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +66,8 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         instantiateElements();
         setAdapters();
         // new NotificationHandler(this);
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
     }
 
     private void instantiateElements() {
@@ -150,29 +152,49 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         MenuInflater inflater = getMenuInflater();
         // Es el xml en res/menu
         inflater.inflate(R.menu.menu, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
+//    @Override
+//    public vo onOptionsItemSelected(@NonNull MenuItem item) {
+//        switch (item.getItemId()) {
+//            case R.id.addItem:
+//                showAlertDialog();
+//                return true;
+//            case R.id.archivedItems:
+//                Intent intent = new Intent(RemindersActivity.this, ArchivedItemsActivity.class);
+//                Bundle bundle = new Bundle();
+//                bundle.putParcelableArrayList("archivedItems", archivedReminders);
+//                bundle.putParcelableArrayList("activeItems", activeReminders);
+//                intent.putExtras(bundle);
+//                startActivity(intent);
+//                return true;
+//            case R.id.logoutItem:
+//                mAuth.signOut();
+//                finish();
+//                break;
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
+//Intent intent = new Intent(this, MainActivity.class);
+//        this.startActivity(intent);
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.addItem:
-                showAlertDialog();
-                return true;
-            case R.id.archivedItems:
-                Intent intent = new Intent(RemindersActivity.this, ArchivedItemsActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("archivedItems", archivedReminders);
-                bundle.putParcelableArrayList("activeItems", activeReminders);
-                intent.putExtras(bundle);
-                startActivity(intent);
-                return true;
-            case R.id.signOut:
-                signOut();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        switch (item.getItemId()){
+            case R.id.logoutItem:
+               mAuth.signOut();
+               finish();
+                break;
         }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        mAuth.signOut();
+        finish();
     }
 
     private void showAlertDialog() {
@@ -363,11 +385,4 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
-    //Este metodo maneja la logica para terminar la sesion generada por firebase, es invocada por la accion de un btn que se llama signOutButton
-    private void signOut() {
-        FirebaseAuth.getInstance().signOut();
-        Toast.makeText(this, "Se cerró correctamente la sesión", Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this, MainActivity.class);
-        this.startActivity(intent);
-    }
 }
