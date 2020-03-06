@@ -11,20 +11,23 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.com.miniproyecto.adapters.ArchivedItemsAdapter;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.miniproyecto.models.Reminder;
 
 import java.util.ArrayList;
 
-public class ArchivedItemsActivity extends AppCompatActivity {
+public class ArchivedReminders extends AppCompatActivity {
 
     private ListView listView;
     private ArrayList<Reminder> archivedReminders, activeReminders;
     ArchivedItemsAdapter itemsAdapter;
+    FloatingActionButton recordVoiceButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.reminders_layout);
+        recordVoiceButton = findViewById(R.id.recorderVoiceButton);
 
         Bundle bundle = this.getIntent().getExtras();
         archivedReminders = bundle.getParcelableArrayList("archivedItems");
@@ -54,7 +57,7 @@ public class ArchivedItemsActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        Intent intent = new Intent(ArchivedItemsActivity.this, RemindersActivity.class);
+        Intent intent = new Intent(ArchivedReminders.this, RemindersActivity.class);
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("archivedItems", archivedReminders);
         bundle.putParcelableArrayList("activeItems", activeReminders);
@@ -65,6 +68,7 @@ public class ArchivedItemsActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        recordVoiceButton.hide();
         Bundle bundle = getIntent().getExtras();
 
         if (bundle != null) {

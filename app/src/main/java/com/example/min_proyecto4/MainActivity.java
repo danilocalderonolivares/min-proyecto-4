@@ -45,16 +45,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    
+
     private void signIn() {
         mAuth.signInWithEmailAndPassword(edtEmail.getText().toString(), edtPassword.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     Toast.makeText(MainActivity.this, "Se ingresaron correctamente las credenciales", Toast.LENGTH_LONG).show();
+                    ingresoApp();
                     FirebaseUser user = mAuth.getCurrentUser();
                     Intent intent = new Intent(MainActivity.this, RemindersActivity.class);
                     startActivity(intent);
+                    //FirebaseUser user = mAuth.getCurrentUser();
+                    //System.out.println(user.getUid());
 
                 } else {
                     Toast.makeText(MainActivity.this, "Credenciales incorrectas", Toast.LENGTH_LONG).show();
@@ -65,9 +68,19 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void ingresoApp() {
+        Intent intent = new Intent(this, RemindersActivity.class);
+        startActivity(intent);
+    }
 
     private void signUpViewTransition() {
         Intent intent = new Intent(this, SignUp.class);
         startActivity(intent);
     }
+//    @Override
+//    public void onBackPressed() {
+//        super.onBackPressed();
+//        mAuth.signOut();
+//        finish();
+//    }
 }

@@ -13,8 +13,9 @@ public class Reminder implements Parcelable {
     public String date;
     public String time;
     public int id;
+    public boolean isAudio;
 
-    public Reminder(int year, int month, int day, int minutes, int hour, String description, int id, String date, String time) {
+    public Reminder(int year, int month, int day, int minutes, int hour, String description, int id, String date, String time, boolean isAudio) {
         this.id =  id;
         this.year = year;
         this.month = month;
@@ -24,6 +25,13 @@ public class Reminder implements Parcelable {
         this.description = description;
         this.time = time;
         this.date = date;
+        this.isAudio = isAudio;
+    }
+
+    public Reminder(String description, int id, boolean isAudio) {
+        this.description = description;
+        this.isAudio = isAudio;
+        this.id = id;
     }
 
     @Override

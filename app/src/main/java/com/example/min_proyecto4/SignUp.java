@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class SignUp extends AppCompatActivity {
     private FirebaseAuth mAuth;
@@ -53,6 +54,18 @@ public class SignUp extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
+
+                    FirebaseDatabase.getInstance().getReference()
+                            .child("users").child(task.getResult()
+                            .getUser().getUid()).child("email")
+                            .setValue(email.getText().toString());
+
+                    FirebaseDatabase.getInstance().getReference()
+                            .child("users").child(task.getResult()
+                            .getUser().getUid()).child("name")
+                            .setValue(userName.getText().toString());
+
+
 
                     Toast.makeText(SignUp.this, "Se registro correctamente", Toast.LENGTH_LONG).show();
                     FirebaseUser user = mAuth.getCurrentUser();

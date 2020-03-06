@@ -43,7 +43,6 @@ import com.miniproyecto.models.Reminder;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
@@ -56,30 +55,124 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
     private ArrayList<Reminder> activeReminders, archivedReminders;
     private ListAdapter listAdapter;
     private Button datePicker, timePicker;
+    FloatingActionButton recordVoiceButton;
     private int yearSelected, monthSelected, minuteSelected, hourSelected, daySelected;
     private EditText reminderInput, reminderDate, reminderTime, textDate, textTime;
     private FirebaseAuth mAuth;
+    private boolean micPressed, exitClicked;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.reminders_layout);
         instantiateElements();
         setAdapters();
+        setRecorderButton();
+        micPressed = false;
+        exitClicked = false;
         // new NotificationHandler(this);
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
     }
 
-    private void instantiateElements() {
-        FloatingActionButton recordVoiceButton = findViewById(R.id.recorderVoiceButton);
+    @Override
+    public void onResume() {
+        super.onResume();
+        Bundle bundle = getIntent().getExtras();
+        recordVoiceButton.show();
+
+        if (bundle != null && !micPressed) {
+            activeReminders = bundle.getParcelableArrayList("activeItems");
+            archivedReminders = bundle.getParcelableArrayList("archivedItems");
+            listAdapter = new ListAdapter(this, R.layout.reminders_layout, activeReminders, archivedReminders);
+            listView.setAdapter(listAdapter);
+        }
+
+        micPressed = false;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        recordVoiceButton.hide();
+        if (micPressed) {
+            recordVoice();
+        } else if (exitClicked) {
+            signOut();
+        } else {
+            Intent intent = new Intent(RemindersActivity.this, ArchivedReminders.class);
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList("activeItems", activeReminders);
+            bundle.putParcelableArrayList("archivedReminders", archivedReminders);
+            intent.putExtras(bundle);
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        // Es el xml en res/menu
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.addItem:
+                showAlertDialog();
+                return true;
+            case R.id.archivedItems:
+                onPause();
+                return true;
+            case R.id.logoutItem:
+                    exitClicked = true;
+                    onPause();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    private void signOut() {
+        mAuth.signOut();
+        Intent intentsignout = new Intent(this, MainActivity.class);
+        intentsignout.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intentsignout);
+        finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case REQUEST_CODE_SPEECH_INPUT: {
+                if (resultCode == RESULT_OK && null != data) {
+                    ArrayList<String> recordedVoice = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    String reminder = recordedVoice.get(0);
+                    try {
+                        saveReminder(new Reminder(reminder, activeReminders.size() + 1, true));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    private void setRecorderButton() {
+        recordVoiceButton = findViewById(R.id.recorderVoiceButton);
         recordVoiceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 checkPermission(42, Manifest.permission.RECORD_AUDIO);
-                recordVoice();
+                micPressed = true;
+                onPause();
             }
         });
+    }
 
+    private void instantiateElements() {
         listView = findViewById(R.id.listView);
         activeReminders = new ArrayList<>();
         archivedReminders = new ArrayList<>();
@@ -95,9 +188,15 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void recordVoice() {
+        String language = "es";
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, language);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, language);
+        intent.putExtra(RecognizerIntent.EXTRA_SUPPORTED_LANGUAGES, language);
+        intent.putExtra(RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, language);
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, language);
+        intent.putExtra(RecognizerIntent.EXTRA_RESULTS, language);
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Graba tu recordatorio");
 
         try {
@@ -105,85 +204,6 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         } catch (Exception e) {
             Toast.makeText(this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        switch (requestCode) {
-            case REQUEST_CODE_SPEECH_INPUT: {
-                if (resultCode == RESULT_OK && null != data) {
-                    ArrayList<String> recordedVoice = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    String reminder = recordedVoice.get(0);
-                    System.out.println(reminder);
-                }
-                break;
-            }
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Bundle bundle = getIntent().getExtras();
-
-        if (bundle != null) {
-            activeReminders = bundle.getParcelableArrayList("activeItems");
-            archivedReminders = bundle.getParcelableArrayList("archivedItems");
-            listAdapter = new ListAdapter(this, R.layout.reminders_layout, activeReminders, archivedReminders);
-            listView.setAdapter(listAdapter);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Intent intent = new Intent(RemindersActivity.this, ArchivedItemsActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("activeItems", activeReminders);
-        bundle.putParcelableArrayList("archivedReminders", archivedReminders);
-        intent.putExtras(bundle);
-        startActivity(intent);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        // Es el xml en res/menu
-        inflater.inflate(R.menu.menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.addItem:
-                showAlertDialog();
-                return true;
-            case R.id.archivedItems:
-                Intent intent = new Intent(RemindersActivity.this, ArchivedItemsActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("archivedItems", archivedReminders);
-                bundle.putParcelableArrayList("activeItems", activeReminders);
-                intent.putExtras(bundle);
-                startActivity(intent);
-                return true;
-            case R.id.logoutItem:
-                mAuth.signOut();
-                Intent intentsignout = new Intent(this, MainActivity.class);
-                startActivity(intentsignout);
-                finish();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        mAuth.signOut();
-        finish();
     }
 
     private void showAlertDialog() {
@@ -206,7 +226,7 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                 if (reminderText.length() > 0 && validateFields()) {
                     try {
                         saveReminder(new Reminder(yearSelected, monthSelected, daySelected, minuteSelected, hourSelected, reminderText, activeReminders.size() + 1,
-                                reminderDate.getText().toString(), reminderTime.getText().toString()));
+                                reminderDate.getText().toString(), reminderTime.getText().toString(), false));
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -322,7 +342,10 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         // Esto hace que cada vez que se agrega un reminder la vista se actualice
         this.listAdapter.notifyDataSetChanged();
         recordNewReminder(reminderInfo);
-        setNotification(reminderInfo);
+
+        if (!reminderInfo.isAudio) {
+            setNotification(reminderInfo);
+        }
     }
 
     private void recordNewReminder(Reminder reminder) {
