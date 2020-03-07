@@ -8,7 +8,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 
 import com.example.min_proyecto4.R;
-import com.example.min_proyecto4.RemindersActivity;
 import com.miniproyecto.models.Reminder;
 import com.miniproyecto.models.ViewHolder;
 

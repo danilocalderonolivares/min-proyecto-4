@@ -59,7 +59,6 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
     private int yearSelected, monthSelected, minuteSelected, hourSelected, daySelected;
     private EditText reminderInput, reminderDate, reminderTime, textDate, textTime;
     private FirebaseAuth mAuth;
-    private boolean micPressed, exitClicked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,45 +67,31 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         instantiateElements();
         setAdapters();
         setRecorderButton();
-        micPressed = false;
-        exitClicked = false;
         // new NotificationHandler(this);
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
+        getRemindersList(getIntent().getExtras());
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Bundle bundle = getIntent().getExtras();
+    private void getRemindersList(Bundle bundle) {
         recordVoiceButton.show();
 
-        if (bundle != null && !micPressed) {
+        if (bundle != null) {
             activeReminders = bundle.getParcelableArrayList("activeItems");
             archivedReminders = bundle.getParcelableArrayList("archivedItems");
             listAdapter = new ListAdapter(this, R.layout.reminders_layout, activeReminders, archivedReminders);
             listView.setAdapter(listAdapter);
         }
-
-        micPressed = false;
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
+    private void startArchivedRemindersActivity() {
         recordVoiceButton.hide();
-        if (micPressed) {
-            recordVoice();
-        } else if (exitClicked) {
-            signOut();
-        } else {
-            Intent intent = new Intent(RemindersActivity.this, ArchivedReminders.class);
-            Bundle bundle = new Bundle();
-            bundle.putParcelableArrayList("activeItems", activeReminders);
-            bundle.putParcelableArrayList("archivedReminders", archivedReminders);
-            intent.putExtras(bundle);
-            startActivity(intent);
-        }
+        Intent intent = new Intent(RemindersActivity.this, ArchivedReminders.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("activeItems", activeReminders);
+        bundle.putParcelableArrayList("archivedReminders", archivedReminders);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     @Override
@@ -116,6 +101,7 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         inflater.inflate(R.menu.menu, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -123,27 +109,25 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                 showAlertDialog();
                 return true;
             case R.id.archivedItems:
-                onPause();
+                startArchivedRemindersActivity();
                 return true;
             case R.id.logoutItem:
-                    exitClicked = true;
-                    onPause();
+                signOut();
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
+
     private void signOut() {
         mAuth.signOut();
-        Intent intentsignout = new Intent(this, MainActivity.class);
-        intentsignout.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intentsignout);
+        Intent signOut = new Intent(this, MainActivity.class);
+        signOut.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(signOut);
         finish();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
         switch (requestCode) {
             case REQUEST_CODE_SPEECH_INPUT: {
                 if (resultCode == RESULT_OK && null != data) {
@@ -158,6 +142,8 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
                 break;
             }
         }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void setRecorderButton() {
@@ -166,8 +152,7 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void onClick(View view) {
                 checkPermission(42, Manifest.permission.RECORD_AUDIO);
-                micPressed = true;
-                onPause();
+                recordVoice();
             }
         });
     }
@@ -367,7 +352,6 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
         endTime.set(reminder.year, reminder.month, reminder.day, reminder.hour, reminder.minutes + 30);
         endMillis = endTime.getTimeInMillis();
 
-        final Calendar cal = Calendar.getInstance();
         ContentResolver cr = this.getContentResolver();
         ContentValues event = new ContentValues();
         event.put(CalendarContract.Events.DTSTART, startMillis);
@@ -396,5 +380,4 @@ public class RemindersActivity extends AppCompatActivity implements View.OnClick
             ActivityCompat.requestPermissions(this, permissionsId, callbackId);
         }
     }
-
 }

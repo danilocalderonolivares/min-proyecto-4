@@ -5,4 +5,10 @@
     <string name="login">Ingresar</string>
     <string name="not_registered">Ir a la pantalla de ingreso.</string>
     <string name="confirm">Confirmar Contraseña</string>
+    <string name="emailAddress">Correo Electrónico</string>
+    <string name="addItem">Agregar</string>
+    <string name="archivedItems">Archivados</string>
+    <string name="exitApp">Salir</string>
+    <string name="signInButtonText">Ingresar</string>
+    <string name="signUpMessage">Si no tiene una cuenta por favor registrese aquí</string>
 </resources>

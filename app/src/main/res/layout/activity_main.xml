@@ -9,7 +9,6 @@
     android:orientation="vertical"
     android:gravity="center_horizontal">
 
-
     <EditText
         android:id="@+id/idEmail"
         android:layout_width="wrap_content"
@@ -20,7 +19,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:hint="Correo Electronico"
+        android:hint="@string/emailAddress"
         app:layout_constraintVertical_bias="0.297" />
 
     <EditText
@@ -30,7 +29,7 @@
         android:layout_marginTop="8dp"
         android:ems="10"
         android:inputType="textPassword"
-        android:hint="Contraseña"
+        android:hint="@string/password"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -45,7 +44,7 @@
         android:layout_marginStart="163dp"
         android:layout_marginEnd="163dp"
         android:layout_marginBottom="198dp"
-        android:text="Si no tiene una cuenta, porfavor registrese aqui"
+        android:text="@string/signUpMessage"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -56,7 +55,7 @@
         android:id="@+id/idSignIn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ingresar"
+        android:text="@string/signInButtonText"
         app:layout_constraintBottom_toTopOf="@+id/signupLink"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
