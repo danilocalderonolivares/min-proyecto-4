@@ -66,7 +66,6 @@ public class SignUp extends AppCompatActivity {
                             .setValue(userName.getText().toString());
 
 
-
                     Toast.makeText(SignUp.this, "Se registro correctamente", Toast.LENGTH_LONG).show();
                     FirebaseUser user = mAuth.getCurrentUser();
                     user.sendEmailVerification();

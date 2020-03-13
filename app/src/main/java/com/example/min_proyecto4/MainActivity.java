@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                     //FirebaseUser user = mAuth.getCurrentUser();
                     //System.out.println(user.getUid());
-
                 } else {
                     Toast.makeText(MainActivity.this, "Credenciales incorrectas", Toast.LENGTH_LONG).show();
                 }
@@ -83,9 +82,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, SignUp.class);
         startActivity(intent);
     }
+
     private void recoveryPasswordTransition() {
         Intent intent = new Intent(this, recoveryPassword.class);
         startActivity(intent);
     }
-
 }
