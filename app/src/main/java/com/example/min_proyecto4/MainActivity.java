@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class MainActivity extends AppCompatActivity {
     private EditText edtEmail, edtPassword;
     private FirebaseAuth mAuth;
+    private TextView recoveryPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         edtPassword = findViewById(R.id.idPassword);
         TextView signUpLink = findViewById(R.id.signupLink);
         Button btnSignIn = findViewById(R.id.idSignIn);
+        recoveryPassword = findViewById(R.id.recoveryPassword);
         mAuth = FirebaseAuth.getInstance();
 
         btnSignIn.setOnClickListener(new View.OnClickListener() {
@@ -42,6 +44,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 signUpViewTransition();
+            }
+        });
+        recoveryPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recoveryPasswordTransition();
             }
         });
     }
@@ -75,10 +83,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, SignUp.class);
         startActivity(intent);
     }
-//    @Override
-//    public void onBackPressed() {
-//        super.onBackPressed();
-//        mAuth.signOut();
-//        finish();
-//    }
+    private void recoveryPasswordTransition() {
+        Intent intent = new Intent(this, recoveryPassword.class);
+        startActivity(intent);
+    }
+
 }
